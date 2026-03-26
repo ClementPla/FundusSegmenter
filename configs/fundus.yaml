@@ -1,0 +1,34 @@
+^define: &img_shape [1024, 1024]
+
+datasets:
+  IDRID: /home/clement/Documents/data/IDRID/A. Segmentation/
+  FGADR: /home/clement/Documents/data/FGADR/Seg-set/
+  MESSIDOR: /home/clement/Documents/data/MAPLES-DR/
+  DDR: /home/clement/Documents/data/DDR-dataset/lesion_segmentation/
+  RETLES: /home/clement/Documents/data/retinal-lesions-v20191227/
+
+data:
+  img_size: *img_shape
+  batch_size: 4
+  valid_size: 0.15
+  ^num_workers: 12
+  ^eval_batch_size: 64
+  use_cache: False
+  persistent_workers: True
+  cache_option: disk
+  data_augmentation_type: medium
+  # random_crop: False
+  precise_autocrop: True
+
+
+trainer:
+  accumulate_grad_batches: 8
+  accelerator: gpu
+  devices: auto
+  max_epochs: 1500
+  precision: 32
+  check_val_every_n_epoch: 25
+  num_sanity_val_steps: 2
+  log_every_n_steps: 50
+  sync_batchnorm: True
+  strategy: ddp_find_unused_parameters_true
