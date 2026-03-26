@@ -1,0 +1,309 @@
+// ── Design tokens (shared with editor) ─────────────────────────────────
+$surface:        #141416;
+$surface-raised: #1c1c1f;
+$surface-hover:  #25252a;
+$surface-card:   #1a1a1d;
+$border:         rgba(255, 255, 255, 0.06);
+$border-strong:  rgba(255, 255, 255, 0.10);
+$text-primary:   rgba(255, 255, 255, 0.92);
+$text-secondary: rgba(255, 255, 255, 0.50);
+$text-muted:     rgba(255, 255, 255, 0.25);
+$accent:         #6e8efb;
+$accent-glow:    rgba(110, 142, 251, 0.15);
+$radius-sm:      4px;
+$radius-md:      8px;
+$radius-lg:      10px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: $surface;
+  color: $text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────
+
+.gallery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  flex-shrink: 0;
+}
+
+.file-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-secondary;
+  letter-spacing: 0.01em;
+}
+
+// ── Pagination ─────────────────────────────────────────────────────────
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.page-btn {
+  color: $text-muted !important;
+  transition: color 0.15s ease;
+
+  &:hover:not([disabled]) {
+    color: $text-secondary !important;
+  }
+  &[disabled] {
+    opacity: 0.3;
+  }
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.page-number {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-variant-numeric: tabular-nums;
+
+  &:hover {
+    color: $text-secondary;
+    background: $surface-hover;
+  }
+
+  &.is-active {
+    color: $accent;
+    background: $accent-glow;
+  }
+}
+
+// ── Empty state ────────────────────────────────────────────────────────
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  color: $text-muted;
+  margin-bottom: 8px;
+}
+
+.empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.empty-subtitle {
+  font-size: 12px;
+  color: $text-muted;
+  margin: 0;
+  font-style: italic;
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────
+
+.grid-wrap {
+  flex: 1 1 0;
+  min-height: 0;        // critical: lets this flex child shrink below content height
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 20px 20px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+// ── Tile ───────────────────────────────────────────────────────────────
+
+.tile {
+  border-radius: $radius-lg;
+  overflow: hidden;
+  background: $surface-card;
+  border: 1px solid $border;
+  cursor: pointer;
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.15s ease;
+  animation: tile-enter 0.3s ease both;
+
+  &:hover {
+    border-color: $border-strong;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+
+    .tile-hover-overlay {
+      opacity: 1;
+    }
+    .tile-image {
+      transform: scale(1.03);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    transition-duration: 0.06s;
+  }
+
+  &.is-active {
+    border-color: rgba($accent, 0.4);
+    box-shadow: 0 0 0 1px rgba($accent, 0.15),
+                0 4px 16px rgba($accent, 0.08);
+  }
+}
+
+@keyframes tile-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tile-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tile-placeholder-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: $text-muted;
+}
+
+// ── Active badge ───────────────────────────────────────────────────────
+
+.active-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: $accent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: badge-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.active-badge-icon {
+  font-size: 13px !important;
+  width: 13px !important;
+  height: 13px !important;
+  color: white;
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// ── Hover overlay ──────────────────────────────────────────────────────
+
+.tile-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.tile-open-icon {
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+// ── Caption ────────────────────────────────────────────────────────────
+
+.tile-caption {
+  padding: 8px 10px;
+  border-top: 1px solid $border;
+}
+
+.tile-name {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}

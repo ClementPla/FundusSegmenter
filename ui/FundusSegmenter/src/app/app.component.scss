@@ -1,0 +1,153 @@
+// ── Design tokens (shared across app) ──────────────────────────────────
+$surface:        #141416;
+$surface-raised: #1c1c1f;
+$surface-hover:  #25252a;
+$border:         rgba(255, 255, 255, 0.06);
+$border-strong:  rgba(255, 255, 255, 0.10);
+$text-primary:   rgba(255, 255, 255, 0.92);
+$text-secondary: rgba(255, 255, 255, 0.50);
+$text-muted:     rgba(255, 255, 255, 0.25);
+$accent:         #6e8efb;
+$nav-height:     42px;
+
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: $surface;
+  color: $text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  SHELL
+// ══════════════════════════════════════════════════════════════════════════
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  height: $nav-height;
+  padding: 0 12px;
+  background: $surface-raised;
+  border-bottom: 1px solid $border-strong;
+  flex-shrink: 0;
+  gap: 4px;
+  // Allow window drag on macOS / frameless windows
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+// ── Brand ──────────────────────────────────────────────────────────────
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 16px;
+  -webkit-app-region: drag;
+}
+
+.brand-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $accent;
+  box-shadow: 0 0 6px rgba($accent, 0.5);
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: $text-secondary;
+  white-space: nowrap;
+  user-select: none;
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────
+
+.nav-tabs {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 14px;
+  height: 100%;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: $text-muted;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+
+  &:hover {
+    color: $text-secondary;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  &.is-active {
+    color: $text-primary;
+    border-bottom-color: $accent;
+
+    .nav-tab-icon {
+      color: $accent;
+    }
+  }
+}
+
+.nav-tab-icon {
+  font-size: 15px !important;
+  width: 15px !important;
+  height: 15px !important;
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+.nav-spacer {
+  flex: 1;
+  -webkit-app-region: drag;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CONTENT
+// ══════════════════════════════════════════════════════════════════════════
+
+.app-content {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  // Make child route components fill the space
+  > * {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+}

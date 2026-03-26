@@ -1,0 +1,555 @@
+// ── Design tokens (shared across app) ──────────────────────────────────
+$surface:        #141416;
+$surface-raised: #1c1c1f;
+$surface-hover:  #25252a;
+$surface-card:   #1a1a1d;
+$border:         rgba(255, 255, 255, 0.06);
+$border-strong:  rgba(255, 255, 255, 0.10);
+$text-primary:   rgba(255, 255, 255, 0.92);
+$text-secondary: rgba(255, 255, 255, 0.50);
+$text-muted:     rgba(255, 255, 255, 0.25);
+$accent:         #6e8efb;
+$accent-glow:    rgba(110, 142, 251, 0.15);
+$radius-sm:      4px;
+$radius-md:      8px;
+$radius-lg:      12px;
+
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: $surface;
+  color: $text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  SHELL & DROP ZONE
+// ══════════════════════════════════════════════════════════════════════════
+
+.home-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px 40px 28px;
+  gap: 28px;
+  position: relative;
+  transition: background 0.2s ease;
+
+  &.is-drag-over {
+    background: rgba($accent, 0.03);
+  }
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($surface, 0.85);
+  backdrop-filter: blur(8px);
+  animation: fade-in 0.15s ease;
+}
+
+.drop-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 60px;
+  border: 2px dashed rgba($accent, 0.5);
+  border-radius: $radius-lg;
+  background: rgba($accent, 0.04);
+}
+
+.drop-icon {
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  color: $accent;
+  animation: drop-bounce 0.8s ease infinite alternate;
+}
+
+.drop-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: $accent;
+  letter-spacing: 0.01em;
+}
+
+@keyframes drop-bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  HERO
+// ══════════════════════════════════════════════════════════════════════════
+
+.hero {
+  flex-shrink: 0;
+  animation: hero-enter 0.5s ease both;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $accent;
+  margin-bottom: 10px;
+}
+
+.eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $accent;
+  box-shadow: 0 0 8px rgba($accent, 0.5);
+}
+
+.hero-title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+  margin: 0 0 10px;
+}
+
+.hero-accent {
+  background: linear-gradient(135deg, $accent, lighten($accent, 18%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 13px;
+  line-height: 1.6;
+  color: $text-secondary;
+  max-width: 440px;
+  margin: 0;
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  MAIN GRID
+// ══════════════════════════════════════════════════════════════════════════
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  PANELS
+// ══════════════════════════════════════════════════════════════════════════
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-lg;
+  border: 1px solid $border-strong;
+  background: $surface-raised;
+  overflow: hidden;
+  animation: panel-enter 0.45s ease both;
+}
+
+.panel-files {
+  animation-delay: 0.08s;
+}
+
+.panel-preview {
+  animation-delay: 0.16s;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+}
+
+.panel-count {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $accent;
+  background: $accent-glow;
+  padding: 2px 8px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+// ── Actions ────────────────────────────────────────────────────────────
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+// Buttons
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.btn-primary {
+  background: $accent;
+  color: white;
+  box-shadow: 0 2px 8px rgba($accent, 0.25);
+
+  &:hover {
+    background: lighten($accent, 6%);
+    box-shadow: 0 4px 14px rgba($accent, 0.35);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  background: $surface-hover;
+  color: $text-secondary;
+  border: 1px solid $border-strong;
+
+  &:hover {
+    background: lighten($surface-hover, 4%);
+    color: $text-primary;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.btn-icon {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
+
+  .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+  }
+}
+
+// ── Empty files state ──────────────────────────────────────────────────
+
+.empty-files {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.empty-files-icon-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px dashed $border-strong;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.empty-files-icon {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  color: $text-muted;
+}
+
+.empty-files-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-secondary;
+}
+
+.empty-files-hint {
+  font-size: 11px;
+  color: $text-muted;
+  line-height: 1.5;
+  max-width: 220px;
+}
+
+// ── File list ──────────────────────────────────────────────────────────
+
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    &:hover { background: rgba(255, 255, 255, 0.12); }
+  }
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  cursor: default;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: $surface-hover;
+  }
+
+  &.is-hovered {
+    background: rgba($accent, 0.06);
+
+    .file-item-icon {
+      color: $accent;
+    }
+  }
+}
+
+.file-item-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: $text-muted;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.file-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.file-item-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-primary;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-item-path {
+  font-size: 10px;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-item-remove {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  color: transparent; // hidden until hover
+  cursor: pointer;
+  transition: all 0.12s ease;
+
+  .mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .file-item:hover & {
+    color: $text-muted;
+  }
+
+  &:hover {
+    color: #f87171 !important;
+    background: rgba(248, 113, 113, 0.1);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  PREVIEW PANEL
+// ══════════════════════════════════════════════════════════════════════════
+
+.panel-preview {
+  position: relative;
+  // Subtle checker background for preview area
+  background:
+    $surface-card
+    repeating-conic-gradient(
+      rgba(255, 255, 255, 0.015) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 20px 20px;
+}
+
+.preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.preview-placeholder-icon {
+  font-size: 36px !important;
+  width: 36px !important;
+  height: 36px !important;
+  color: $text-muted;
+}
+
+.preview-placeholder-text {
+  font-size: 12px;
+  color: $text-muted;
+  font-style: italic;
+}
+
+.preview-spinner {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: $text-muted;
+}
+
+.preview-active {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 10px;
+  min-height: 0;
+  animation: preview-fade 0.2s ease;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: calc(100% - 28px);
+  object-fit: contain;
+  border-radius: $radius-md;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.preview-filename {
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-secondary;
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+@keyframes preview-fade {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+// ── Shared ─────────────────────────────────────────────────────────────
+
+.spin-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -1,0 +1,36 @@
+<div class="app-shell">
+  <!-- Model download dialog (shown on first run) -->
+  @if (showModelDownload) {
+    <app-model-download (completed)="onModelReady()"></app-model-download>
+  }
+
+  <!-- ── Navigation ────────────────────────────────────────────────── -->
+  <nav class="app-nav">
+    <div class="nav-brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">FundusSegmenter</span>
+    </div>
+
+    <div class="nav-tabs">
+      <a class="nav-tab" routerLink="/home" routerLinkActive="is-active">
+        <mat-icon class="nav-tab-icon">home</mat-icon>
+        Home
+      </a>
+      <a class="nav-tab" routerLink="/gallery" routerLinkActive="is-active">
+        <mat-icon class="nav-tab-icon">photo_library</mat-icon>
+        Gallery
+      </a>
+      <a class="nav-tab" routerLink="/editor" routerLinkActive="is-active">
+        <mat-icon class="nav-tab-icon">biotech</mat-icon>
+        Editor
+      </a>
+    </div>
+
+    <span class="nav-spacer"></span>
+  </nav>
+
+  <!-- ── Page content ──────────────────────────────────────────────── -->
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

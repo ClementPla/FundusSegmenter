@@ -1,0 +1,100 @@
+<div class="backdrop">
+  <div class="dialog" [class.is-error]="model.status === 'error'">
+    <!-- Header icon -->
+    <div class="dialog-icon-ring">
+      @switch (model.status) {
+        @case ("checking") {
+          <mat-icon class="dialog-icon spin-icon">autorenew</mat-icon>
+        }
+        @case ("missing") {
+          <mat-icon class="dialog-icon icon-missing">download</mat-icon>
+        }
+        @case ("downloading") {
+          <mat-icon class="dialog-icon icon-downloading spin-icon"
+            >sync</mat-icon
+          >
+        }
+        @case ("ready") {
+          <mat-icon class="dialog-icon icon-ready">check_circle</mat-icon>
+        }
+        @case ("error") {
+          <mat-icon class="dialog-icon icon-error">error_outline</mat-icon>
+        }
+      }
+    </div>
+
+    <!-- Title -->
+    @switch (model.status) {
+      @case ("checking") {
+        <h2 class="dialog-title">Checking model…</h2>
+        <p class="dialog-sub">Looking for the segmentation model on disk.</p>
+      }
+      @case ("missing") {
+        <h2 class="dialog-title">Model Required</h2>
+        <p class="dialog-sub">
+          The ONNX segmentation model needs to be downloaded before first use.
+          This is a one-time setup.
+        </p>
+      }
+      @case ("downloading") {
+        <h2 class="dialog-title">Downloading Model</h2>
+        <p class="dialog-sub">{{ model.progress.status }}</p>
+      }
+      @case ("ready") {
+        <h2 class="dialog-title">Ready</h2>
+        <p class="dialog-sub">Model downloaded successfully.</p>
+      }
+      @case ("error") {
+        <h2 class="dialog-title">Download Failed</h2>
+        <p class="dialog-sub error-text">{{ model.error }}</p>
+      }
+    }
+
+    <!-- Progress bar -->
+    @if (model.status === "downloading") {
+      <div class="progress-section">
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [style.width.%]="model.progress.fraction * 100"
+          ></div>
+        </div>
+        <div class="progress-stats">
+          <span>{{ model.formatBytes(model.progress.downloaded) }}</span>
+          @if (model.progress.total) {
+            <span>
+              of {{ model.formatBytes(model.progress.total) }} ·
+              {{ model.progress.fraction * 100 | number: "1.0-0" }}%
+            </span>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Completed check -->
+    @if (model.status === "ready") {
+      <div class="ready-check">
+        <mat-icon class="ready-check-icon">verified</mat-icon>
+        <span>Model verified and cached locally</span>
+      </div>
+    }
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      @switch (model.status) {
+        @case ("missing") {
+          <button class="btn-download" (click)="startDownload()">
+            <mat-icon>cloud_download</mat-icon>
+            Download Model
+          </button>
+        }
+        @case ("error") {
+          <button class="btn-download" (click)="retry()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        }
+      }
+    </div>
+  </div>
+</div>

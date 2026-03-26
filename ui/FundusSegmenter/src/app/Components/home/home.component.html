@@ -1,0 +1,122 @@
+<div class="home-shell" [class.is-drag-over]="isDragOver">
+  <!-- Drag overlay -->
+  @if (isDragOver) {
+    <div class="drop-overlay">
+      <div class="drop-overlay-content">
+        <mat-icon class="drop-icon">cloud_upload</mat-icon>
+        <span class="drop-text">Drop images or folders</span>
+      </div>
+    </div>
+  }
+
+  <!-- ── Hero section ──────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Fundus Segmenter
+    </div>
+    <h1 class="hero-title">
+      Retinal Lesion<br />
+      <span class="hero-accent">Analysis</span>
+    </h1>
+    <p class="hero-sub">
+      Segment fundus images, detect lesions, and classify diabetic retinopathy —
+      all locally on your machine.
+    </p>
+  </header>
+
+  <!-- ── Main content ──────────────────────────────────────────────── -->
+  <div class="main-grid">
+    <!-- ── Left: actions + file list ──────────────────────────────── -->
+    <section class="panel panel-files">
+      <div class="panel-header">
+        <span class="panel-title">Images</span>
+        @if (images.files.length) {
+          <span class="panel-count">{{ images.files.length }}</span>
+        }
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" (click)="loadImages()">
+          <mat-icon>image</mat-icon>
+          Load images
+        </button>
+        <button class="btn-secondary" (click)="loadFolder()">
+          <mat-icon>folder_open</mat-icon>
+          Load folder
+        </button>
+        @if (images.files.length > 0) {
+          <button
+            class="btn-icon"
+            (click)="images.clearFiles()"
+            matTooltip="Clear all images"
+          >
+            <mat-icon>delete_sweep</mat-icon>
+          </button>
+        }
+      </div>
+
+      @if (images.files.length === 0) {
+        <div class="empty-files">
+          <div class="empty-files-icon-ring">
+            <mat-icon class="empty-files-icon">photo_library</mat-icon>
+          </div>
+          <span class="empty-files-text"> No images loaded yet </span>
+          <span class="empty-files-hint">
+            Drag &amp; drop files or folders anywhere on this window
+          </span>
+        </div>
+      } @else {
+        <ul class="file-list" (mouseleave)="images.clearPreview()">
+          @for (file of images.files; track file; let i = $index) {
+            <li
+              class="file-item"
+              [class.is-hovered]="images.previewPath === file"
+              (mouseenter)="images.hoverPreview(file)"
+            >
+              <mat-icon class="file-item-icon">image</mat-icon>
+              <div class="file-item-info">
+                <span class="file-item-name">{{ images.basename(file) }}</span>
+                <span class="file-item-path">{{ file }}</span>
+              </div>
+              <button
+                class="file-item-remove"
+                (click)="images.removeFile(i); $event.stopPropagation()"
+                matTooltip="Remove"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- ── Right: preview ─────────────────────────────────────────── -->
+    <section class="panel panel-preview">
+      @if (images.previewLoading) {
+        <div class="preview-empty">
+          <mat-icon class="spin-icon preview-spinner">autorenew</mat-icon>
+        </div>
+      } @else if (images.previewSrc) {
+        <div class="preview-active">
+          <img
+            [src]="images.previewSrc"
+            [alt]="images.previewPath ?? ''"
+            class="preview-image"
+          />
+          <span class="preview-filename">
+            {{ images.previewPath ? images.basename(images.previewPath) : "" }}
+          </span>
+        </div>
+      } @else {
+        <div class="preview-empty">
+          <mat-icon class="preview-placeholder-icon">image_search</mat-icon>
+          <span class="preview-placeholder-text">
+            Hover a file to preview
+          </span>
+        </div>
+      }
+    </section>
+  </div>
+</div>

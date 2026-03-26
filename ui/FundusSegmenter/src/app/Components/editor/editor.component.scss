@@ -1,0 +1,813 @@
+// ── Design tokens ──────────────────────────────────────────────────────
+$surface:        #141416;
+$surface-raised: #1c1c1f;
+$surface-hover:  #25252a;
+$border:         rgba(255, 255, 255, 0.06);
+$border-strong:  rgba(255, 255, 255, 0.10);
+$text-primary:   rgba(255, 255, 255, 0.92);
+$text-secondary: rgba(255, 255, 255, 0.50);
+$text-muted:     rgba(255, 255, 255, 0.25);
+$accent:         #6e8efb;
+$danger:         #f87171;
+$sidebar-width:  260px;
+$toolbar-height: 44px;
+$radius-sm:      4px;
+$radius-md:      6px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: $surface;
+  color: $text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  TOOLBAR
+// ══════════════════════════════════════════════════════════════════════════
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: $toolbar-height;
+  padding: 0 8px;
+  background: $surface-raised;
+  border-bottom: 1px solid $border-strong;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbar-btn {
+  color: $text-secondary !important;
+  transition: color 0.15s ease;
+  &:hover:not([disabled]) { color: $text-primary !important; }
+  &[disabled] { color: $text-muted !important; }
+  .mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+.action-btn:not([disabled]) {
+  color: $accent !important;
+  &:hover { color: lighten($accent, 12%) !important; }
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: $border-strong;
+  margin: 0 6px;
+}
+
+.filename {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-secondary;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.zoom-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-secondary;
+  font-variant-numeric: tabular-nums;
+  min-width: 42px;
+  text-align: right;
+  margin-right: 2px;
+}
+
+.zoom-unit {
+  font-weight: 400;
+  color: $text-muted;
+}
+
+.spin-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── FoV control (toolbar) ─────────────────────────────────────────────
+
+.fov-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px;
+}
+
+.fov-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.fov-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $text-secondary;
+    border: 2px solid $surface-raised;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    &:hover { background: $text-primary; }
+  }
+
+  &::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $text-secondary;
+    border: 2px solid $surface-raised;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.fov-value {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  min-width: 32px;
+  text-align: right;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  EDITOR BODY
+// ══════════════════════════════════════════════════════════════════════════
+
+.editor-body {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  VIEWPORT
+// ══════════════════════════════════════════════════════════════════════════
+
+.viewport {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  user-select: none;
+  background:
+    $surface
+    repeating-conic-gradient(
+      rgba(255, 255, 255, 0.02) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 24px 24px;
+}
+
+.viewport-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  color: $text-muted;
+}
+
+.canvas-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.canvas-image {
+  display: block;
+  max-width: none;
+}
+
+.overlay-svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;   // default off — re-enabled per element
+  transition: opacity 0.15s ease;
+}
+
+// ── ROI processing effect ──────────────────────────────────────────────
+
+.roi-pulse-stroke {
+  animation: roi-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes roi-pulse {
+  0%, 100% { stroke-opacity: 0.25; stroke-width: 4; }
+  50%      { stroke-opacity: 0.7;  stroke-width: 8; }
+}
+
+.roi-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent       0%,
+      transparent       35%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent       65%,
+      transparent       100%
+    ),
+    rgba(0, 0, 0, 0.18);
+  background-size: 200% 100%, 100% 100%;
+  background-position: -100% 0, 0 0;
+  background-repeat: no-repeat, no-repeat;
+  animation: roi-shimmer-sweep 2s ease-in-out infinite;
+}
+
+@keyframes roi-shimmer-sweep {
+  0%   { background-position: -100% 0, 0 0; }
+  100% { background-position:  200% 0, 0 0; }
+}
+
+// ── Lesion polygons (clickable) ────────────────────────────────────────
+
+.lesion-poly {
+  pointer-events: all;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    filter: brightness(1.4);
+  }
+
+  &.poly-disabled {
+    opacity: 0.15;
+    stroke-dasharray: 6 4;
+    filter: saturate(0.3);
+
+    &:hover {
+      opacity: 0.3;
+      filter: saturate(0.3) brightness(1.3);
+    }
+  }
+}
+
+// ── Macula drag handle ─────────────────────────────────────────────────
+
+.macula-handle {
+  pointer-events: all;
+  cursor: grab;
+
+  &:hover {
+    line {
+      stroke-width: 4;
+      filter: drop-shadow(0 0 4px cyan);
+    }
+  }
+
+  &.is-dragging {
+    cursor: crosshair;
+    line {
+      stroke-width: 4;
+      stroke: white;
+      filter: drop-shadow(0 0 6px cyan);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  SIDEBAR
+// ══════════════════════════════════════════════════════════════════════════
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: $sidebar-width;
+  flex-shrink: 0;
+  background: $surface-raised;
+  border-left: 1px solid $border-strong;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+}
+
+.sidebar-badge {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $accent;
+  background: rgba($accent, 0.12);
+  padding: 2px 7px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+.sidebar-content {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    &:hover { background: rgba(255, 255, 255, 0.15); }
+  }
+}
+
+// ── Empty / Loading ────────────────────────────────────────────────────
+
+.sidebar-empty,
+.sidebar-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: $text-muted;
+}
+
+.empty-text,
+.loading-text {
+  font-size: 11px;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+// ── Sidebar sections ──────────────────────────────────────────────────
+
+.sidebar-section {
+  padding: 10px 14px;
+  border-bottom: 1px solid $border;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.section-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: $text-muted;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-secondary;
+  flex: 1;
+}
+
+.section-value {
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-muted;
+}
+
+// ── Opacity slider ────────────────────────────────────────────────────
+
+.opacity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $text-secondary;
+    border: 2px solid $surface-raised;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    &:hover { background: $text-primary; transform: scale(1.15); }
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $text-secondary;
+    border: 2px solid $surface-raised;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+  }
+}
+
+// ── Class list ─────────────────────────────────────────────────────────
+
+.class-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  border-bottom: 1px solid $border;
+}
+
+.class-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.12s ease, opacity 0.2s ease;
+  user-select: none;
+
+  &:hover { background: $surface-hover; }
+
+  &.is-hidden {
+    opacity: 0.35;
+    .class-swatch { opacity: 0.4; }
+  }
+}
+
+.class-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.2s ease;
+}
+
+.class-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.class-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-primary;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-count {
+  font-size: 10px;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.visibility-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: $text-muted;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+  .class-item:hover & { color: $text-secondary; }
+}
+
+// ── Section toggle ─────────────────────────────────────────────────────
+
+.section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 0;
+  border-radius: $radius-sm;
+  transition: color 0.15s ease;
+
+  &:hover {
+    .section-label { color: $text-primary; }
+    .section-icon { color: $text-secondary; }
+  }
+
+  &.is-active {
+    .section-icon { color: $accent; }
+  }
+}
+
+.toggle-chevron {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: $text-muted;
+}
+
+// ── Region list ────────────────────────────────────────────────────────
+
+.region-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.region-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background 0.12s ease, opacity 0.2s ease;
+  user-select: none;
+
+  &:hover { background: $surface-hover; }
+
+  &.region-all-disabled {
+    opacity: 0.35;
+  }
+}
+
+.region-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.region-label {
+  font-size: 11px;
+  color: $text-secondary;
+  flex: 1;
+}
+
+.region-count {
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-muted;
+}
+
+.macula-moved-badge {
+  font-size: 9px;
+  font-weight: 600;
+  color: cyan;
+  background: rgba(0, 255, 255, 0.1);
+  padding: 1px 5px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.macula-hint {
+  margin-top: 8px;
+  font-size: 10px;
+  color: $text-muted;
+  line-height: 1.4;
+}
+
+// ── Feature vector table ──────────────────────────────────────────────
+
+.feature-table-wrap {
+  margin-top: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: $radius-sm;
+  border: 1px solid $border;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+  }
+}
+
+.feature-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+
+  th, td {
+    padding: 3px 5px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    background: $surface-hover;
+    color: $text-secondary;
+    font-weight: 600;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid $border-strong;
+  }
+
+  td {
+    color: $text-muted;
+    border-bottom: 1px solid $border;
+  }
+
+  .col-value {
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .col-metric { color: $text-muted; }
+
+  .col-region {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .col-lesion {
+    font-size: 8px;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  tr.has-value {
+    td { color: $text-primary; }
+    td.col-value { color: $accent; }
+  }
+}
+
+// ── Prediction card ───────────────────────────────────────────────────
+
+.prediction-card {
+  margin: 10px 14px;
+  padding: 10px 12px;
+  border-radius: $radius-md;
+  border: 1px solid $border-strong;
+  background: $surface;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &.is-positive {
+    border-color: rgba($danger, 0.35);
+    background: rgba($danger, 0.06);
+
+    .prediction-icon { color: $danger; }
+    .prediction-label { color: $danger; }
+    .prediction-bar-fill { background: $danger; }
+  }
+
+  &.is-negative {
+    border-color: rgba(#4ade80, 0.3);
+    background: rgba(#4ade80, 0.04);
+
+    .prediction-icon { color: #4ade80; }
+    .prediction-label { color: #4ade80; }
+    .prediction-bar-fill { background: #4ade80; }
+  }
+}
+
+.prediction-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.prediction-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.prediction-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.prediction-bar-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: visible;
+  margin-bottom: 6px;
+}
+
+.prediction-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  min-width: 2px;
+}
+
+.prediction-bar-threshold {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  background: $text-secondary;
+  border-radius: 1px;
+  transform: translateX(-1px);
+}
+
+.prediction-detail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.prediction-threshold-label {
+  color: $text-muted;
+  font-weight: 400;
+}
+
+// ── Sidebar footer ─────────────────────────────────────────────────────
+
+.sidebar-footer {
+  padding: 10px 14px;
+  border-top: 1px solid $border;
+  font-size: 10px;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+  margin-top: auto;
+  flex-shrink: 0;
+}

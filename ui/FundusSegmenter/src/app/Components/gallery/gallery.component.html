@@ -1,0 +1,106 @@
+<!-- ── Header bar ──────────────────────────────────────────────────── -->
+<div class="gallery-header">
+  <div class="header-left">
+    <span class="file-count">
+      {{ images.files.length }}
+      image{{ images.files.length !== 1 ? "s" : "" }}
+    </span>
+  </div>
+
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <button
+        mat-icon-button
+        class="page-btn"
+        [disabled]="currentPage === 0"
+        (click)="goToPage(currentPage - 1)"
+        matTooltip="Previous page"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      @for (i of pageIndices; track i) {
+        <button
+          class="page-number"
+          [class.is-active]="i === currentPage"
+          (click)="goToPage(i)"
+        >
+          {{ i + 1 }}
+        </button>
+      }
+
+      <button
+        mat-icon-button
+        class="page-btn"
+        [disabled]="currentPage === totalPages - 1"
+        (click)="goToPage(currentPage + 1)"
+        matTooltip="Next page"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  }
+</div>
+
+<!-- ── Content ────────────────────────────────────────────────────── -->
+@if (images.files.length === 0) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">photo_library</mat-icon>
+    <p class="empty-title">No images loaded</p>
+    <p class="empty-subtitle">Use the home page to add some.</p>
+  </div>
+} @else {
+  <div class="grid-wrap">
+    <div class="gallery-grid">
+      @for (file of pageFiles; track file; let idx = $index) {
+        <div
+          class="tile"
+          [class.is-active]="images.activeImage === file"
+          [style.animation-delay]="idx * 30 + 'ms'"
+          (dblclick)="activateImage(file)"
+          [matTooltip]="images.basename(file)"
+          matTooltipShowDelay="500"
+        >
+          <!-- Thumbnail area -->
+          <div class="tile-thumb">
+            @switch (tileStatus(file)) {
+              @case ("ready") {
+                <img
+                  [src]="src(file)"
+                  [alt]="images.basename(file)"
+                  class="tile-image"
+                />
+              }
+              @case ("loading") {
+                <mat-spinner diameter="24" strokeWidth="2" />
+              }
+              @case ("error") {
+                <mat-icon class="tile-placeholder-icon">broken_image</mat-icon>
+              }
+              @default {
+                <mat-icon class="tile-placeholder-icon">image</mat-icon>
+              }
+            }
+
+            <!-- Active indicator -->
+            @if (images.activeImage === file) {
+              <div class="active-badge">
+                <mat-icon class="active-badge-icon">check</mat-icon>
+              </div>
+            }
+
+            <!-- Hover overlay -->
+            <div class="tile-hover-overlay">
+              <mat-icon class="tile-open-icon">open_in_new</mat-icon>
+            </div>
+          </div>
+
+          <!-- Caption -->
+          <div class="tile-caption">
+            <span class="tile-name">{{ images.basename(file) }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
