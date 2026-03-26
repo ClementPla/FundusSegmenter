@@ -1,6 +1,31 @@
 # Created by https://www.toptal.com/developers/gitignore/api/rust,angular,python,visualstudiocode,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=rust,angular,python,visualstudiocode,jupyternotebooks
+# Rust build output inside the Tauri project
+ui/FundusSegmenter/src-tauri/target/
+# Generated Tauri bundles (installers, dmg, msi, AppImage, etc.)
+ui/FundusSegmenter/src-tauri/gen/
 
+# ── Angular (already covered above, but be explicit for the nested path) ──
+ui/FundusSegmenter/dist/
+ui/FundusSegmenter/.angular/
+ui/FundusSegmenter/node_modules/
+
+# ── ONNX models (large binary files, downloaded at runtime) ────────────
+*.onnx
+*.onnx.downloading
+*.pkl
+# ── OS artifacts ───────────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
+
+# ── Weights & data (wandb, checkpoints, large datasets) ───────────────
+wandb/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+target/
 *.ckpt
 checkpoints/
 *.onnx
@@ -258,3 +283,4 @@ Cargo.lock
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/rust,angular,python,visualstudiocode,jupyternotebooks
+src/**/*.png
