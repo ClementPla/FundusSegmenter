@@ -1,6 +1,14 @@
 # Created by https://www.toptal.com/developers/gitignore/api/rust,angular,python,visualstudiocode,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=rust,angular,python,visualstudiocode,jupyternotebooks
 
+*.ckpt
+checkpoints/
+*.onnx
+*.onnxruntime
+*.onnxruntime_session_options
+*.onnxruntime_providers
+.pytest_cache/
+tests/
 ### Angular ###
 ## Angular ##
 # compiled output
@@ -8,7 +16,7 @@ dist/
 tmp/
 app/**/*.js
 app/**/*.js.map
-bundles/
+
 # dependencies
 node_modules/
 bower_components/
