@@ -172,20 +172,62 @@ pub async fn extract_roi(image_path: String) -> Result<String, String> {
     let original = image::open(&image_path)
         .map_err(|e| format!("failed to open image: {e}"))?
         .to_rgb8();
+    let (width, height) = original.dimensions();
 
-    let bounds = find_content_bounds(&original);
+    // Threshold on the green channel to find the fundus disc
+    let thresholded = GrayImage::from_fn(width, height, |x, y| {
+        let pixel = original.get_pixel(x, y);
+        let green_value = pixel[1];
+        if green_value > BLACK_THRESHOLD {
+            Luma([1])
+        } else {
+            Luma([0])
+        }
+    });
 
-    // Build a single polygon from the bounding rectangle (4 corners, clockwise)
-    let polygon = vec![SerializedPolygon {
-        points: vec![
-            [bounds.x as f32,              bounds.y as f32],
-            [bounds.x as f32 + bounds.w as f32, bounds.y as f32],
-            [bounds.x as f32 + bounds.w as f32, bounds.y as f32 + bounds.h as f32],
-            [bounds.x as f32,              bounds.y as f32 + bounds.h as f32],
-        ],
-    }];
+    let polygon = extract_class_polygons(&thresholded, 1u8);
 
-    let json = serde_json::to_string(&polygon)
+    // Sanity check: if the detected ROI is unrealistic (covers less than
+    // 50% of the image area, or nothing was found), fall back to the full
+    // image rectangle.
+    let result = if polygon.is_empty() || !is_plausible_roi(&polygon, width, height) {
+        vec![SerializedPolygon {
+            points: vec![
+                [0.0, 0.0],
+                [width as f32, 0.0],
+                [width as f32, height as f32],
+                [0.0, height as f32],
+            ],
+        }]
+    } else {
+        polygon
+    };
+
+    let json = serde_json::to_string(&result)
         .map_err(|e| format!("JSON serialization failed: {e}"))?;
     Ok(json)
+}
+
+/// Check whether the detected ROI polygon(s) cover a plausible fraction
+/// of the image. Returns false if the bounding box of all polygon points
+/// is smaller than 50% of the image area.
+fn is_plausible_roi(polygons: &[SerializedPolygon], img_w: u32, img_h: u32) -> bool {
+    let mut min_x = f32::INFINITY;
+    let mut min_y = f32::INFINITY;
+    let mut max_x = f32::NEG_INFINITY;
+    let mut max_y = f32::NEG_INFINITY;
+
+    for poly in polygons {
+        for pt in &poly.points {
+            if pt[0] < min_x { min_x = pt[0]; }
+            if pt[1] < min_y { min_y = pt[1]; }
+            if pt[0] > max_x { max_x = pt[0]; }
+            if pt[1] > max_y { max_y = pt[1]; }
+        }
+    }
+
+    let roi_area = (max_x - min_x) * (max_y - min_y);
+    let img_area = img_w as f32 * img_h as f32;
+
+    roi_area >= img_area * 0.5
 }
